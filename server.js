@@ -1,45 +1,51 @@
-const express = require("express");
-// const bodyParser = require("body-parser"); /* deprecated */
+const express = require("express")
 const cors = require("cors");
+require("./app/config/initial.config")
 
 const app = express();
 
-var corsOptions = {
-  // origin: "http://localhost:3000"
-  origin: '*'
-};
-
-app.use(cors(corsOptions));
-
-// parse requests of content-type - application/json
-app.use(express.json());  /* bodyParser.json() is deprecated */
+app.use(cors({origin: '*'}))
+app.use(express.json())
 
 // parse requests of content-type - application/x-www-form-urlencoded
-app.use(express.urlencoded({ extended: true }));   /* bodyParser.urlencoded() is deprecated */
+app.use(express.urlencoded({ extended: true }))
 
-const db = require("./app/models");
-db.mongoose
-  .connect(db.url, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
-  })
-  .then(() => {
-    console.log("Connected to the database!");
-  })
-  .catch(err => {
-    console.log("Cannot connect to the database!", err);
-    process.exit();
-  });
+// ---------------------------------------- INICIO---------------------------------------------
+
+function generarMensaje (autor) {
+  console.log('Ejecutando generarMensaje() ...');
+  let mensaje = "Welcome to "+ autor + " first CRUD."
+  return mensaje
+}
 
 // simple route
 app.get("/", (req, res) => {
-  res.json({ message: "Welcome to Kathe's first CRUD." })
+  let mensaje = generarMensaje("kathe's") // cableado
+  res.json({ message:  mensaje})
 })
 
-require("./app/routes/deuda.routes")(app);
+app.post("/dinamico", (req, res) => {
+  console.log('req.body :>> ', req.body)
+  let autorRequest = req.body.autor
+  let mensaje = generarMensaje(autorRequest) // dinamico desde el request
+  res.json({ message:  mensaje})
+})
 
-// set port, listen for requests
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}.`)
-});
+app.post("/abstracto", mensajeAbstracto) // funcion ubicada en cualquier otro archivo
+
+function mensajeAbstracto (req, res) { // recibe el req y res como parametros
+  console.log('req.body :>> ', req.body)
+  let mensaje = generarMensaje(req.body.autor)
+  res.json({ message:  mensaje})
+}
+
+// const deudas = require("./app/controllers/deuda.controller.js")
+// app.post("/creardeuda", deudas.create)
+
+// require("./app/routes/deuda.routes")(app);
+
+//Se inicia la app en el puerto 3000
+const puerto = 3000
+app.listen(puerto, () => {
+  console.log('Se inicio el servidor en el puerto:' + puerto)
+})

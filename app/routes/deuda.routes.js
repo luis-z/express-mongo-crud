@@ -1,10 +1,8 @@
 module.exports = app => {
   const deudas = require("../controllers/deuda.controller.js");
 
-  var router = require("express").Router();
-
   // Create a new Tutorial
-  router.post("/", deudas.create);
+  app.post("/creardeuda", deudas.create);
 
   // Retrieve all deudas
   // router.get("/", deudas.findAll);
@@ -24,5 +22,4 @@ module.exports = app => {
   // // Create a new Tutorial
   // router.delete("/", deudas.deleteAll);
 
-  app.use("/api/deudas", router);
 };
